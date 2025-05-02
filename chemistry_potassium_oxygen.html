@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高锰酸钾制氧气/Potassium Permanganate Oxygen Production</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .experiment-setup {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            position: relative;
+            height: 300px;
+        }
+        .flask {
+            width: 100px;
+            height: 150px;
+            background-color: #e6f7ff;
+            border: 2px solid #333;
+            border-radius: 0 0 50px 50px;
+            position: relative;
+            margin-top: 50px;
+        }
+        .kMnO4 {
+            position: absolute;
+            bottom: 10px;
+            width: 80px;
+            height: 30px;
+            left: 10px;
+            background-color: #7b1fa2;
+            border-radius: 5px;
+            transition: all 2s;
+        }
+        .bubble {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            animation: bubble-rise 3s infinite;
+            opacity: 0;
+        }
+        .tube {
+            width: 20px;
+            height: 200px;
+            background-color: #e6f7ff;
+            border: 2px solid #333;
+            position: absolute;
+            left: 150px;
+            top: 0;
+            transform: rotate(45deg);
+            transform-origin: bottom left;
+        }
+        .water {
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            background-color: #4fc3f7;
+            bottom: 0;
+        }
+        .gas {
+            position: absolute;
+            width: 100%;
+            height: 30px;
+            background-color: #e6f7ff;
+            top: 0;
+            transition: height 2s;
+        }
+        .burner {
+            width: 60px;
+            height: 20px;
+            background-color: #333;
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            border-radius: 5px 5px 0 0;
+        }
+        .flame {
+            width: 30px;
+            height: 50px;
+            background: linear-gradient(to top, #ff5722, #ffeb3b, transparent);
+            position: absolute;
+            bottom: 20px;
+            left: 35px;
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.5s infinite alternate;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .element-key {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        .element {
+            display: flex;
+            align-items: center;
+        }
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #333;
+        }
+        .quiz-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 100;
+            width: 80%;
+            max-width: 500px;
+            animation: bounce 0.5s;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .quiz-option {
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .quiz-option:hover {
+            background-color: #e0e0e0;
+        }
+        .quiz-option.correct {
+            background-color: #a5d6a7;
+        }
+        .quiz-option.incorrect {
+            background-color: #ef9a9a;
+        }
+        .close-quiz {
+            background-color: #2196F3;
+            margin-top: 15px;
+        }
+        .explanation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+        .summary {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .summary h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .summary ul {
+            margin-bottom: 0;
+        }
+        .language-section {
+            margin-top: 30px;
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            min-height: 24px;
+        }
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px);
+                opacity: 0;
+            }
+        }
+        @keyframes flicker {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translate(-50%, -50%);}
+            40% {transform: translate(-50%, -60%);}
+            60% {transform: translate(-50%, -45%);}
+        }
+        .equation {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>高锰酸钾制氧气实验<br>Potassium Permanganate Oxygen Production</h1>
+        
+        <div class="experiment-setup">
+            <div class="burner">
+                <div class="flame"></div>
+            </div>
+            <div class="flask">
+                <div class="kMnO4" id="kmno4"></div>
+            </div>
+            <div class="tube">
+                <div class="gas" id="gas"></div>
+                <div class="water"></div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">准备开始实验 / Ready to begin experiment</div>
+        
+        <div class="element-key">
+            <div class="element">
+                <div class="color-box" style="background-color: #7b1fa2;"></div>
+                <span>高锰酸钾 (KMnO₄) / Potassium Permanganate</span>
+            </div>
+            <div class="element">
+                <div class="color-box" style="background-color: #e6f7ff;"></div>
+                <span>氧气 (O₂) / Oxygen Gas</span>
+            </div>
+            <div class="element">
+                <div class="color-box" style="background: linear-gradient(to top, #ff5722, #ffeb3b);"></div>
+                <span>酒精灯火焰 / Alcohol Flame</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="start-btn">开始实验 / Start Experiment</button>
+            <button id="reset-btn">重置实验 / Reset Experiment</button>
+        </div>
+        
+        <div class="equation" id="equation">
+            化学方程式 / Chemical Equation: 2KMnO₄ → K₂MnO₄ + MnO₂ + O₂↑
+        </div>
+        
+        <!-- Quiz Modals -->
+        <div class="quiz-modal" id="quiz1">
+            <h3>实验装置问题 / Setup Question</h3>
+            <p>为什么试管要略向下倾斜？<br>Why should the test tube be slightly tilted downward?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="checkAnswer(1, this, 2)">使气体流动更顺畅 / To allow better gas flow</div>
+                <div class="quiz-option" onclick="checkAnswer(1, this, 1)">防止水倒流 / To prevent water from entering</div>
+                <div class="quiz-option" onclick="checkAnswer(1, this, 0)">防止冷凝水回流使试管炸裂 / To prevent condensation from cracking the tube</div>
+                <div class="quiz-option" onclick="checkAnswer(1, this, 3)">加快反应速度 / To make the reaction faster</div>
+            </div>
+            <div class="explanation" id="explanation1">
+                正确答案：试管口略向下倾斜是为了防止加热时产生的水蒸气在试管口冷凝后倒流，导致试管炸裂。<br>
+                Correct answer: The test tube is tilted downward to prevent water vapor from condensing and flowing back into the hot tube, which could cause it to crack.
+            </div>
+            <button class="close-quiz" onclick="closeQuiz(1)">继续 / Continue</button>
+        </div>
+        
+        <div class="quiz-modal" id="quiz2">
+            <h3>加热过程问题 / Heating Question</h3>
+            <p>加热高锰酸钾的主要目的是什么？<br>What is the main purpose of heating potassium permanganate?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="checkAnswer(2, this, 3)">提纯化合物 / To purify the compound</div>
+                <div class="quiz-option" onclick="checkAnswer(2, this, 2)">改变其颜色 / To change its color</div>
+                <div class="quiz-option" onclick="checkAnswer(2, this, 0)">使其分解产生氧气 / To decompose it into oxygen and other products</div>
+                <div class="quiz-option" onclick="checkAnswer(2, this, 1)">使其溶于水 / To make it dissolve in water</div>
+            </div>
+            <div class="explanation" id="explanation2">
+                正确答案：加热高锰酸钾使其分解，产生氧气、锰酸钾和二氧化锰。<br>
+                Correct answer: Heating causes potassium permanganate to decompose into oxygen gas, potassium manganate, and manganese dioxide.
+            </div>
+            <button class="close-quiz" onclick="closeQuiz(2)">继续 / Continue</button>
+        </div>
+        
+        <div class="quiz-modal" id="quiz3">
+            <h3>气体收集问题 / Collection Question</h3>
+            <p>为什么用排水法收集氧气？<br>Why is oxygen collected by downward displacement of water?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="checkAnswer(3, this, 2)">因为氧气比水轻 / Because oxygen is lighter than water</div>
+                <div class="quiz-option" onclick="checkAnswer(3, this, 1)">因为氧气微溶于水 / Because oxygen is slightly soluble in water</div>
+                <div class="quiz-option" onclick="checkAnswer(3, this, 0)">因为氧气不易溶于水 / Because oxygen is not very soluble in water</div>
+                <div class="quiz-option" onclick="checkAnswer(3, this, 3)">因为水会与氧气反应 / Because water reacts with oxygen</div>
+            </div>
+            <div class="explanation" id="explanation3">
+                正确答案：氧气在水中溶解度较低(室温下每升水约溶解30cm³氧气)，适合用排水法收集。<br>
+                Correct answer: Oxygen is collected this way because it's only slightly soluble in water (about 30 cm³ per liter at room temperature).
+            </div>
+            <button class="close-quiz" onclick="closeQuiz(3)">继续 / Continue</button>
+        </div>
+        
+        <div class="quiz-modal" id="quiz4">
+            <h3>气体检验问题 / Testing Question</h3>
+            <p>如何检验收集到的气体是氧气？<br>How would you confirm the collected gas is oxygen?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="checkAnswer(4, this, 0)">用带火星的木条复燃 / Using a glowing splint that reignites</div>
+                <div class="quiz-option" onclick="checkAnswer(4, this, 1)">观察其颜色 / By observing its color</div>
+                <div class="quiz-option" onclick="checkAnswer(4, this, 2)">测量其温度 / By measuring its temperature</div>
+                <div class="quiz-option" onclick="checkAnswer(4, this, 3)">闻其气味 / By checking its smell</div>
+            </div>
+            <div class="explanation" id="explanation4">
+                正确答案：氧气能支持燃烧，可使带火星的木条复燃。<br>
+                Correct answer: Oxygen supports combustion, so it will cause a glowing splint to burst into flames when inserted into the gas.
+            </div>
+            <button class="close-quiz" onclick="closeQuiz(4)">完成 / Finish</button>
+        </div>
+        
+        <div class="summary">
+            <h3>实验要点 / Key Points of the Experiment:</h3>
+            <ul>
+                <li><strong>化学方程式 / Chemical Formula:</strong> 2KMnO₄ → K₂MnO₄ + MnO₂ + O₂↑</li>
+                <li><strong>实验装置 / Apparatus:</strong> 试管、酒精灯、导管、水槽、集气瓶 / Test tube, Bunsen burner, delivery tube, water trough, gas collection jar</li>
+                <li><strong>方法 / Method:</strong> 加热试管中的高锰酸钾，用排水法收集氧气 / Heat potassium permanganate in a test tube and collect oxygen by downward displacement of water</li>
+                <li><strong>注意事项 / Precautions:</strong>
+                    <ul>
+                        <li>试管口略向下倾斜防止水倒流 / Tilt the test tube downward to prevent water backflow</li>
+                        <li>先移出导管再熄灭酒精灯 / Remove delivery tube before turning off heat</li>
+                        <li>保持通风良好，因为氧气助燃 / Use proper ventilation as oxygen supports combustion</li>
+                        <li>加热时戴护目镜 / Wear safety goggles when heating</li>
+                        <li>高锰酸钾有腐蚀性，避免直接接触 / Potassium permanganate is corrosive - avoid direct contact</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const kmno4 = document.getElementById('kmno4');
+        const gas = document.getElementById('gas');
+        const equation = document.getElementById('equation');
+        const status = document.getElementById('status');
+        
+        // Experiment state
+        let experimentRunning = false;
+        let currentStep = 0;
+        
+        // Event Listeners
+        startBtn.addEventListener('click', function() {
+            if (!experimentRunning) {
+                experimentRunning = true;
+                startBtn.disabled = true;
+                resetBtn.disabled = true;
+                runFullExperiment();
+            }
+        });
+        
+        resetBtn.addEventListener('click', resetExperiment);
+        
+        // Functions
+        function runFullExperiment() {
+            resetExperiment();
+            status.textContent = "准备实验装置 / Setting up apparatus...";
+            equation.style.display = 'block';
+            
+            // Step 1: Setup (3 seconds)
+            setTimeout(() => {
+                showQuiz(1);
+            }, 3000);
+        }
+        
+        function showQuiz(quizNum) {
+            status.textContent = "回答问题 / Answer the question...";
+            const quiz = document.getElementById('quiz' + quizNum);
+            quiz.style.display = 'block';
+            
+            // After 5 seconds, show the correct answer and explanation
+            setTimeout(() => {
+                const correctIndex = getCorrectIndex(quizNum);
+                const correctOption = quiz.querySelectorAll('.quiz-option')[correctIndex];
+                correctOption.classList.add('correct');
+                quiz.querySelector('.explanation').style.display = 'block';
+                
+                // After showing answer, proceed to next step
+                if (quizNum < 4) {
+                    setTimeout(() => {
+                        quiz.style.display = 'none';
+                        proceedToNextStep(quizNum);
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        quiz.style.display = 'none';
+                        status.textContent = "实验完成! / Experiment complete!";
+                        resetBtn.disabled = false;
+                    }, 2000);
+                }
+            }, 5000);
+        }
+        
+        function proceedToNextStep(currentQuizNum) {
+            currentStep = currentQuizNum + 1;
+            
+            switch(currentStep) {
+                case 2:
+                    // Show heating animation
+                    status.textContent = "加热高锰酸钾 / Heating potassium permanganate...";
+                    kmno4.style.height = '10px';
+                    kmno4.style.backgroundColor = '#4a148c';
+                    createBubbles();
+                    
+                    setTimeout(() => {
+                        showQuiz(2);
+                    }, 3000);
+                    break;
+                    
+                case 3:
+                    // Show gas collection
+                    status.textContent = "收集氧气 / Collecting oxygen gas...";
+                    gas.style.height = '150px';
+                    
+                    setTimeout(() => {
+                        showQuiz(3);
+                    }, 3000);
+                    break;
+                    
+                case 4:
+                    // Show testing (just show quiz)
+                    status.textContent = "检验氧气 / Testing for oxygen...";
+                    showQuiz(4);
+                    break;
+            }
+        }
+        
+        function getCorrectIndex(quizNum) {
+            const correctIndices = [2, 2, 2, 0]; // Correct options for each quiz (0-based)
+            return correctIndices[quizNum - 1];
+        }
+        
+        function resetExperiment() {
+            // Reset visuals
+            kmno4.style.height = '30px';
+            kmno4.style.backgroundColor = '#7b1fa2';
+            gas.style.height = '30px';
+            equation.style.display = 'none';
+            
+            // Remove bubbles
+            const bubbles = document.querySelectorAll('.bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            
+            // Hide all quizzes
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('quiz' + i).style.display = 'none';
+                const options = document.querySelectorAll('#quiz' + i + ' .quiz-option');
+                options.forEach(option => {
+                    option.classList.remove('correct', 'incorrect');
+                });
+                document.getElementById('explanation' + i).style.display = 'none';
+            }
+            
+            // Reset state
+            experimentRunning = false;
+            currentStep = 0;
+            startBtn.disabled = false;
+            resetBtn.disabled = false;
+            status.textContent = "准备开始实验 / Ready to begin experiment";
+        }
+        
+        function createBubbles() {
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = Math.random() * 80 + 10 + 'px';
+                bubble.style.bottom = '40px';
+                bubble.style.animationDelay = i * 0.3 + 's';
+                document.querySelector('.flask').appendChild(bubble);
+            }
+        }
+        
+        function checkAnswer(quizNum, element, correctIndex) {
+            const options = element.parentElement.children;
+            
+            // Mark selected option
+            if (Array.from(options).indexOf(element) === correctIndex) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('incorrect');
+                options[correctIndex].classList.add('correct');
+            }
+            
+            // Show explanation immediately if user clicks
+            document.getElementById('explanation' + quizNum).style.display = 'block';
+        }
+        
+        function closeQuiz(quizNum) {
+            document.getElementById('quiz' + quizNum).style.display = 'none';
+            
+            // If not the last quiz, proceed to next step
+            if (quizNum < 4) {
+                proceedToNextStep(quizNum);
+            } else {
+                // Experiment complete
+                status.textContent = "实验完成! / Experiment complete!";
+                resetBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
